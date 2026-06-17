@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warung Ibu - Panel Juruwang & Admin</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        gold: {
+                            50: '#fdfbf7',
+                            100: '#fbf4e6',
+                            200: '#f5e4c4',
+                            300: '#ebd097',
+                            400: '#dfb768',
+                            500: '#d49b3f',
+                            600: '#b87c2f',
+                            700: '#995f26',
+                            800: '#7c4c21',
+                            900: '#663e1e',
+                        },
+                        navy: {
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+<style>
+        /* Corak Latar Belakang Batik Klasik */
+        .batik-bg {
+            background-color: #020617;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(212, 155, 63, 0.08) 1px, transparent 20px),
+                radial-gradient(circle at 0 0, rgba(212, 155, 63, 0.05) 2px, transparent 40px),
+                linear-gradient(45deg, rgba(212, 155, 63, 0.01) 25%, transparent 25%, transparent 75%, rgba(212, 155, 63, 0.01) 75%, rgba(212, 155, 63, 0.01)),
+                linear-gradient(45deg, rgba(212, 155, 63, 0.01) 25%, #020617 25%, #020617 75%, rgba(212, 155, 63, 0.01) 75%, rgba(212, 155, 63, 0.01));
+            background-size: 40px 40px, 40px 40px, 80px 80px, 80px 80px;
+            background-position: 0 0, 20px 20px, 0 0, 40px 40px;
+        }
+
+/* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d49b3f;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-100 bg-navy-950 min-h-screen batik-bg">
+
+<!-- Navigation & Header -->
+    <header class="bg-navy-900 border-b border-gold-500/20 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-gold-500 text-navy-950 p-2 rounded-xl border border-gold-400">
+                    <i data-lucide="store" class="w-6 h-6 stroke-[2.5]"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif text-2xl font-black text-white tracking-wider flex items-center gap-2">
+                        WARUNG IBU <span class="text-xs bg-gold-950 border border-gold-500/40 text-gold-400 font-sans px-2 py-0.5 rounded-full">HQ ADMIN</span>
+                    </h1>
+                    <p class="text-[11px] text-gold-400 font-medium">Panel Pengurusan Masa-Nyata Juruwang & Pemilik</p>
+                </div>
+            </div>
+
+<!-- Navigation Tabs -->
+            <div class="flex bg-navy-950 border border-gold-500/20 rounded-xl p-1 text-sm">
+                <button onclick="tukarTab('orders')" id="tab-orders" class="px-5 py-2 rounded-lg font-semibold transition-all duration-200 bg-gold-500 text-navy-950 flex items-center gap-2">
+                    <i data-lucide="list-ordered" class="w-4 h-4"></i>
+                    Pesanan Aktif
+                </button>
+                <button onclick="tukarTab('history')" id="tab-history" class="px-5 py-2 rounded-lg font-semibold transition-all duration-200 text-gray-400 hover:text-gold-400 flex items-center gap-2">
+                    <i data-lucide="trending-up" class="w-4 h-4"></i>
+                    Pertumbuhan & Sejarah
+                </button>
+            </div>
+        </div>
+    </header>
+
+<main class="max-w-7xl mx-auto px-4 py-8">
+
+<!-- Notification Bar (For sound authorization) -->
+        <div id="sound-auth-banner" class="mb-6 bg-gold-950/80 border border-gold-500/30 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left shadow-lg">
+            <div class="flex items-center gap-3 flex-col sm:flex-row">
+                <div class="p-2 bg-gold-500/10 text-gold-400 rounded-lg animate-bounce">
+                    <i data-lucide="bell-ring" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white uppercase tracking-wider">Sistem Notifikasi Bunyi Bersedia</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Sila klik butang di sebelah untuk mengaktifkan loceng pesanan baru.</p>
+                </div>
+            </div>
+            <button onclick="aktifkanBunyi()" class="bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold px-4 py-2 rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-md">
+                <i data-lucide="volume-2" class="w-4 h-4"></i> Aktifkan Bunyi
+            </button>
+        </div>
+
+<!-- Notification Toast -->
+        <div id="toast-notif" class="fixed bottom-6 right-6 z-50 bg-green-600 text-white border border-green-400 px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-32 opacity-0 transition-all duration-500 pointer-events-none">
+            <i data-lucide="check-circle" class="w-6 h-6"></i>
+            <div>
+                <p id="toast-title" class="font-bold text-sm">Berjaya</p>
+                <p id="toast-message" class="text-xs text-green-100 mt-0.5">Operasi berjaya dilaksanakan.</p>
+            </div>
+        </div>
+
+<!-- ================= TAB ORDERS (Dashboard) ================= -->
+        <section id="sect-orders" class="space-y-8">
+            <!-- Live Analytics Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Total Sales Today -->
+                <div class="bg-navy-900 border border-gold-500/20 rounded-2xl p-5 shadow-lg relative overflow-hidden flex items-center justify-between">
+                    <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-gold-500/5 rounded-full blur-xl"></div>
+                    <div>
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Jualan Paid Hari Ini</span>
+                        <h2 id="stats-sales-today" class="text-3xl font-black text-gold-400 font-serif mt-1">RM 0.00</h2>
+                        <p class="text-[10px] text-green-400 mt-1 flex items-center gap-0.5"><i data-lucide="check" class="w-3.5 h-3.5"></i> Jualan yang sudah dibayar</p>
+                    </div>
+                    <div class="p-3 bg-gold-500/10 text-gold-400 rounded-xl border border-gold-500/20">
+                        <i data-lucide="dollar-sign" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+<!-- Card 2: Total Customers Today -->
+                <div class="bg-navy-900 border border-gold-500/20 rounded-2xl p-5 shadow-lg relative overflow-hidden flex items-center justify-between">
+                    <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-gold-500/5 rounded-full blur-xl"></div>
+                    <div>
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Pelanggan Hari Ini</span>
+                        <h2 id="stats-customers-today" class="text-3xl font-black text-white font-serif mt-1">0</h2>
+                        <p class="text-[10px] text-gray-400 mt-1">1 pesanan = 1 pelanggan</p>
+                    </div>
+                    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
+                        <i data-lucide="users" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+<!-- Card 3: Unpaid Sales Today -->
+                <div class="bg-navy-900 border border-gold-500/20 rounded-2xl p-5 shadow-lg relative overflow-hidden flex items-center justify-between">
+                    <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-gold-500/5 rounded-full blur-xl"></div>
+                    <div>
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Belum Bayar (Unpaid)</span>
+                        <h2 id="stats-unpaid-today" class="text-3xl font-black text-red-400 font-serif mt-1">RM 0.00</h2>
+                        <p class="text-[10px] text-red-400 mt-1 flex items-center gap-0.5"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Menunggu bayaran di kaunter</p>
+                    </div>
+                    <div class="p-3 bg-red-500/10 text-red-400 rounded-xl border border-red-500/20">
+                        <i data-lucide="alert-circle" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+<!-- Card 4: Average Order Value -->
+                <div class="bg-navy-900 border border-gold-500/20 rounded-2xl p-5 shadow-lg relative overflow-hidden flex items-center justify-between">
+                    <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-gold-500/5 rounded-full blur-xl"></div>
+                    <div>
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Purata Jualan / Pelanggan</span>
+                        <h2 id="stats-aov-today" class="text-3xl font-black text-teal-400 font-serif mt-1">RM 0.00</h2>
+                        <p class="text-[10px] text-gray-400 mt-1">Average Order Value (AOV)</p>
+                    </div>
+                    <div class="p-3 bg-teal-500/10 text-teal-400 rounded-xl border border-teal-500/20">
+                        <i data-lucide="calculator" class="w-6 h-6"></i>
+                    </div>
+                </div>
+            </div>
+
+<!-- Order List Area -->
+            <div class="bg-navy-900 border border-gold-500/20 rounded-3xl p-6 shadow-xl space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h3 class="font-serif text-xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="file-text" class="text-gold-400 w-5 h-5"></i>
+                            Senarai Pesanan Masuk (Masa-Nyata)
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Sistem akan dikemas kini secara automatik apabila pesanan baru diterima.</p>
+                    </div>
+
+<!-- Filter Status -->
+                    <div class="flex bg-navy-950 border border-gold-500/20 rounded-xl p-1 text-xs">
+                        <button onclick="tapisPesanan('semua')" id="btn-filt-semua" class="px-3 py-1.5 rounded-lg font-semibold bg-gold-500 text-navy-950">Semua</button>
+                        <button onclick="tapisPesanan('unpaid')" id="btn-filt-unpaid" class="px-3 py-1.5 rounded-lg font-semibold text-gray-400 hover:text-gold-400">Belum Bayar</button>
+                        <button onclick="tapisPesanan('paid')" id="btn-filt-paid" class="px-3 py-1.5 rounded-lg font-semibold text-gray-400 hover:text-gold-400">Sudah Bayar</button>
+                    </div>
+                </div>
+
+<!-- Orders Container -->
+                <div id="live-orders-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Loading state -->
+                    <div class="col-span-full text-center py-24 text-gray-500">
+                        <i data-lucide="loader" class="w-12 h-12 mx-auto animate-spin text-gold-400 mb-3"></i>
+                        <p class="font-serif text-lg text-gold-300/80">Menghubungkan ke Pangkalan Data...</p>
+                        <p class="text-xs mt-1">Sila pastikan anda mempunyai akses internet yang stabil.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<!-- ================= TAB HISTORY (Analytics) ================= -->
+        <section id="sect-history" class="hidden space-y-8">
+            <!-- Growth Tracker Information banner -->
+            <div class="bg-gradient-to-r from-gold-950/80 via-navy-900 to-gold-950/80 border border-gold-500/30 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                <div class="absolute -left-12 -top-12 w-32 h-32 bg-gold-500/10 rounded-full blur-2xl"></div>
+                <div class="z-10 text-center md:text-left">
+                    <h2 class="font-serif text-2xl font-bold text-white">Analisis Hasil Pendapatan & Pertumbuhan</h2>
+                    <p class="text-xs text-gray-300 mt-1 max-w-2xl">Sistem merekodkan jualan yang disahkan bertanda "Paid" dan menghimpunkannya mengikut tarikh. Anda boleh memantau pertumbuhan perniagaan dan prestasi jualan harian di bawah.</p>
+                </div>
+                <div class="p-4 bg-gold-500/10 border border-gold-500/30 rounded-2xl text-center z-10 min-w-[140px]">
+                    <span class="text-[10px] text-gold-300 font-bold uppercase tracking-wider block">Prestasi Terbaik</span>
+                    <span id="best-day-sales" class="text-2xl font-black text-gold-400 block font-serif mt-1">RM 0.00</span>
+                    <span id="best-day-date" class="text-[9px] text-gray-400 block mt-0.5">Tiada Data</span>
+                </div>
+            </div>
+
+<!-- History Log Table Card -->
+            <div class="bg-navy-900 border border-gold-500/20 rounded-3xl p-6 shadow-xl space-y-6">
+                <div>
+                    <h3 class="font-serif text-xl font-bold text-white flex items-center gap-2">
+                        <i data-lucide="history" class="text-gold-400 w-5 h-5"></i>
+                        Log Sejarah Pendapatan Harian
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Sejarah dihitung secara dinamik berdasarkan keseluruhan transaksi pesanan "Paid" dalam pangkalan data.</p>
+                </div>
+
+<div class="overflow-x-auto rounded-xl border border-gold-500/10">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-navy-950 text-gold-400 text-xs font-bold uppercase tracking-wider border-b border-gold-500/20">
+                                <th class="p-4">Tarikh / Hari</th>
+                                <th class="p-4">Bilangan Pelanggan (Pesanan)</th>
+                                <th class="p-4">Pesanan Paid / Unpaid</th>
+                                <th class="p-4">Jumlah Jualan (Paid Only)</th>
+                                <th class="p-4">Pertumbuhan (Growth Rate)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-rows" class="text-xs divide-y divide-gold-500/10 text-gray-300">
+                            <!-- Rows dynamically populated by JS -->
+                            <tr>
+                                <td colspan="5" class="p-8 text-center text-gray-500">
+                                    <i data-lucide="alert-circle" class="w-8 h-8 mx-auto mb-2 opacity-30 text-gold-400"></i>
+                                    Tiada rekod data sejarah ditemui.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+    <footer class="bg-navy-950 border-t border-gold-500/20 py-8 text-center text-xs text-gray-500">
+        <p>© 2026 Warung Ibu HQ. Direka untuk kelancaran kawalan juruwang & kemajuan perniagaan.</p>
+    </footer>
+
+<!-- ================= JAVASCRIPT & FIREBASE INTEGRATION ================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Konfigurasi Firebase Dinamik dengan fallback
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "AIzaSyDyrX1WmJ67x3w5PDAW6v2yJazT49ZQa7g",
+                authDomain: "restoran-dd4bd.firebaseapp.com",
+                projectId: "restoran-dd4bd",
+                storageBucket: "restoran-dd4bd.firebasestorage.app",
+                messagingSenderId: "44849081363",
+                appId: "1:44849081363:web:1a56f2ebc972f5227be3e6",
+                measurementId: "G-GME7877LYX"
+            };
+
+        // Inisialisasi Firebase & Firestore
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'restoran-dd4bd';
+        
+        let currentUser = null;
+        let globalOrders = []; // Simpan semua pesanan dalam memori tempatan
+        let penapisSemasa = "semua"; // "semua", "unpaid", "paid"
+        let statusBunyi = false;
+        let totalOrdersSebelumnya = 0; // Mengesan pesanan baru untuk pemberitahuan audio
+
+        // Pengurusan Audio Alert menggunakan Web Audio API (Coin sound effect)
+        function aktifkanBunyi() {
+            statusBunyi = true;
+            // Test bunyi ringkas
+            bunyiDuitSyiling();
+            document.getElementById('sound-auth-banner').classList.add('hidden');
+            tunjukToast("Bunyi Diaktifkan", "Sistem bersedia mengeluarkan loceng apabila ada pesanan baru.");
+        }
+
+        function bunyiDuitSyiling() {
+            if (!statusBunyi) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Frekuensi Pertama (High Pitch chime)
+                const osc1 = ctx.createOscillator();
+                const gain1 = ctx.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+                osc1.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1); // A5
+                
+                // Frekuensi Kedua (Harmonic ping)
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(987.77, ctx.currentTime); // B5
+                osc2.frequency.exponentialRampToValueAtTime(1318.51, ctx.currentTime + 0.12); // E6
+
+                gain1.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+
+                gain2.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+
+                osc1.connect(gain1);
+                gain1.connect(ctx.destination);
+                
+                osc2.connect(gain2);
+                gain2.connect(ctx.destination);
+
+                osc1.start();
+                osc2.start();
+
+                osc1.stop(ctx.currentTime + 0.5);
+                osc2.stop(ctx.currentTime + 0.5);
+            } catch (err) {
+                console.warn("Ralat Audio API:", err);
+            }
+        }
+
+        // Menguruskan Authentication (RULE 3)
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (tokenError) {
+                        console.warn("Custom token failed, falling back to anonymous auth.", tokenError);
+                        await signInAnonymously(auth);
+                    }
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) {
+                console.error("Firebase Auth Error:", e);
+            }
+        };
+
+        initAuth();
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                mulakanPendengarPesanan();
+            }
+        });
+
+        // Mulakan Real-time Listener (onSnapshot) dari Firestore (RULE 1, 2, 3)
+        function mulakanPendengarPesanan() {
+            const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
+            
+            // Mendapatkan data tanpa sebarang query kompleks (RULE 2)
+            onSnapshot(collectionRef, (snapshot) => {
+                const list = [];
+                snapshot.forEach((doc) => {
+                    list.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                // Isih data mengikut masa paling terbaru di dalam memori JS (RULE 2)
+                list.sort((a, b) => {
+                    const dateA = a.createdAt?.seconds || 0;
+                    const dateB = b.createdAt?.seconds || 0;
+                    return dateB - dateA; // Terbaru di atas
+                });
+
+                globalOrders = list;
+
+                // Memainkan bunyi notifikasi jika ada pesanan baru masuk
+                if (totalOrdersSebelumnya > 0 && list.length > totalOrdersSebelumnya) {
+                    bunyiDuitSyiling();
+                    tunjukToast("Pesanan Baru!", "Satu pesanan baru telah diterima daripada pelanggan.");
+                }
+                totalOrdersSebelumnya = list.length;
+
+                // Kemaskini statistik dan paparan senarai orders
+                prosesAnalitisDanSejarah();
+                kemaskiniSenaraiOrdersUI();
+            }, (error) => {
+                console.error("onSnapshot failed:", error);
+                tunjukToast("Ralat Pengkalan Data", "Gagal menyegerakkan data masa-nyata.", true);
+            });
+        }
+
+        // Pemprosesan Analitis & Rekod Sejarah Dinamik (Analisis Pertumbuhan)
+        function prosesAnalitisDanSejarah() {
+            // Dapatkan tarikh hari ini dalam format (YYYY-MM-DD)
+            const todayStr = dapatkanTarikhHariIni();
+
+            let salesToday = 0;
+            let unpaidToday = 0;
+            let customersToday = 0;
+
+            // Pengumpulan Data Sejarah (Dihimpun mengikut Tarikh YYYY-MM-DD)
+            const mapTarikh = {};
+
+            globalOrders.forEach(order => {
+                let orderDateStr = todayStr; // fallback tarikh hari ini
+                
+                if (order.createdAt) {
+                    const dateObj = new Date(order.createdAt.seconds * 1000);
+                    orderDateStr = formatKeTarikhSederhana(dateObj);
+                }
+
+                // Pecahan data mengikut hari
+                if (!mapTarikh[orderDateStr]) {
+                    mapTarikh[orderDateStr] = {
+                        tarikh: orderDateStr,
+                        pelanggan: 0,
+                        totalPaidSales: 0,
+                        pesananPaid: 0,
+                        pesananUnpaid: 0
+                    };
+                }
+
+                const dataHari = mapTarikh[orderDateStr];
+                dataHari.pelanggan += 1;
+
+                if (order.status === 'paid' || order.status === 'Selesai') {
+                    dataHari.totalPaidSales += (order.totalPrice || 0);
+                    dataHari.pesananPaid += 1;
+                } else {
+                    dataHari.pesananUnpaid += 1;
+                }
+
+                // Kira data khusus Hari Ini
+                if (orderDateStr === todayStr) {
+                    customersToday += 1;
+                    if (order.status === 'paid' || order.status === 'Selesai') {
+                        salesToday += (order.totalPrice || 0);
+                    } else {
+                        unpaidToday += (order.totalPrice || 0);
+                    }
+                }
+            });
+
+            // Kemaskini Statistik Today Cards di UI
+            document.getElementById('stats-sales-today').innerText = `RM ${salesToday.toFixed(2)}`;
+            document.getElementById('stats-customers-today').innerText = customersToday;
+            document.getElementById('stats-unpaid-today').innerText = `RM ${unpaidToday.toFixed(2)}`;
+            
+            const purataAov = customersToday > 0 ? (salesToday / customersToday) : 0;
+            document.getElementById('stats-aov-today').innerText = `RM ${purataAov.toFixed(2)}`;
+
+            // Binakan Log Sejarah Tersusun mengikut tarikh menurun (terbaru dahulu)
+            const senaraiSejarah = Object.values(mapTarikh).sort((a, b) => b.tarikh.localeCompare(a.tarikh));
+            
+            // Cari hari paling terbaik (Best Day)
+            let bestDayAmt = 0;
+            let bestDayStr = "Tiada Data";
+            senaraiSejarah.forEach(h => {
+                if (h.totalPaidSales > bestDayAmt) {
+                    bestDayAmt = h.totalPaidSales;
+                    bestDayStr = h.tarikh;
+                }
+            });
+            document.getElementById('best-day-sales').innerText = `RM ${bestDayAmt.toFixed(2)}`;
+            document.getElementById('best-day-date').innerText = formatTarikhMesra(bestDayStr);
+
+            // Reka Baris-baris Sejarah & Kira Pertumbuhan (Growth Rate)
+            const tbody = document.getElementById('history-rows');
+            if (senaraiSejarah.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="p-8 text-center text-gray-500">
+                            <i data-lucide="alert-circle" class="w-8 h-8 mx-auto mb-2 opacity-30 text-gold-400"></i>
+                            Tiada rekod data sejarah ditemui.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = '';
+                // Untuk mengira growth, kita bandingkan hari semasa dengan hari sebelumnya dalam senarai kronologi (menaik)
+                const senaraiUrutanMenaik = [...senaraiSejarah].reverse();
+                
+                senaraiSejarah.forEach(hari => {
+                    // Cari indeks hari ini dalam turutan menaik untuk mengira growth banding hari kelmarin
+                    const idx = senaraiUrutanMenaik.findIndex(x => x.tarikh === hari.tarikh);
+                    let teksGrowth = `<span class="text-gray-500">-</span>`;
+
+                    if (idx > 0) {
+                        const kelmarin = senaraiUrutanMenaik[idx - 1];
+                        const salesHariKelmarin = kelmarin.totalPaidSales;
+                        const salesHariIni = hari.totalPaidSales;
+
+                        if (salesHariKelmarin > 0) {
+                            const growth = ((salesHariIni - salesHariKelmarin) / salesHariKelmarin) * 100;
+                            if (growth > 0) {
+                                teksGrowth = `<span class="text-green-400 font-bold flex items-center gap-0.5"><i data-lucide="arrow-up-right" class="w-3 h-3"></i>+${growth.toFixed(1)}%</span>`;
+                            } else if (growth < 0) {
+                                teksGrowth = `<span class="text-red-400 font-bold flex items-center gap-0.5"><i data-lucide="arrow-down-right" class="w-3 h-3"></i>${growth.toFixed(1)}%</span>`;
+                            } else {
+                                teksGrowth = `<span class="text-gray-400">0.0% (Mendatar)</span>`;
+                            }
+                        } else if (salesHariIni > 0) {
+                            teksGrowth = `<span class="text-green-400 font-bold flex items-center gap-0.5"><i data-lucide="arrow-up-right" class="w-3 h-3"></i>+100% (Mula)</span>`;
+                        }
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gold-500/5 transition-colors border-b border-gold-500/10";
+                    tr.innerHTML = `
+                        <td class="p-4 font-bold text-white">${formatTarikhMesra(hari.tarikh)}</td>
+                        <td class="p-4">${hari.pelanggan} Pelanggan</td>
+                        <td class="p-4">
+                            <span class="text-green-400">${hari.pesananPaid} Paid</span> / 
+                            <span class="text-red-400">${hari.pesananUnpaid} Unpaid</span>
+                        </td>
+                        <td class="p-4 font-bold text-gold-400 font-mono">RM ${hari.totalPaidSales.toFixed(2)}</td>
+                        <td class="p-4">${teksGrowth}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            lucide.createIcons();
+        }
+
+        // Kemaskini Visual Paparan Senarai Orders di Dashboard Juruwang
+        function kemaskiniSenaraiOrdersUI() {
+            const container = document.getElementById('live-orders-container');
+            
+            // Tapis data pesanan berdasarkan status pilihan tab penapis
+            let senaraiSaring = globalOrders;
+            if (penapisSemasa === 'unpaid') {
+                senaraiSaring = globalOrders.filter(o => o.status !== 'paid' && o.status !== 'Selesai');
+            } else if (penapisSemasa === 'paid') {
+                senaraiSaring = globalOrders.filter(o => o.status === 'paid' || o.status === 'Selesai');
+            }
+
+            if (senaraiSaring.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-24 text-gray-500 bg-navy-950/40 rounded-2xl border border-gold-500/5">
+                        <i data-lucide="inbox" class="w-16 h-16 mx-auto mb-3 opacity-30 text-gold-400"></i>
+                        <p class="font-serif text-lg text-gold-300/80">Tiada Pesanan Dijumpai</p>
+                        <p class="text-xs mt-1">Buat masa ini, tiada pesanan di bawah status "${penapisSemasa.toUpperCase()}"</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            senaraiSaring.forEach(order => {
+                const isPaid = (order.status === 'paid' || order.status === 'Selesai');
+                
+                // Card order UI
+                const orderCard = document.createElement('div');
+                orderCard.className = `p-5 rounded-2xl border transition-all duration-300 ${
+                    isPaid 
+                    ? 'bg-navy-950/40 border-green-500/20 shadow-inner' 
+                    : 'bg-navy-950 border-gold-500/10 shadow-lg hover:border-gold-500/30'
+                }`;
+
+                // Parse Tarikh masa pesanan
+                let formatMasa = "Baru tadi";
+                if (order.createdAt) {
+                    const timeObj = new Date(order.createdAt.seconds * 1000);
+                    formatMasa = timeObj.toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' }) + ' | ' + timeObj.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short' });
+                }
+
+                // Generate item-list HTML
+                let itemsHtml = '';
+                if (order.items && order.items.length > 0) {
+                    order.items.forEach(item => {
+                        itemsHtml += `
+                            <div class="flex justify-between items-center text-xs py-1 border-b border-gray-800/60 text-gray-300">
+                                <span class="font-medium text-white">${item.nama} <span class="text-gold-400 font-bold">x${item.kuantiti}</span></span>
+                                <span class="font-mono text-gray-400">RM ${(item.harga * item.kuantiti).toFixed(2)}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    itemsHtml = `<p class="text-xs text-red-400 py-2">Tiada butiran item.</p>`;
+                }
+
+                orderCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="text-[10px] text-gray-500 font-semibold block">${formatMasa}</span>
+                            <h4 class="font-bold text-base text-white mt-0.5 flex items-center gap-1.5">
+                                <i data-lucide="user" class="w-4 h-4 text-gold-400"></i> ${order.customerName || 'Tiada Nama'}
+                            </h4>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            isPaid 
+                            ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
+                            : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 animate-pulse'
+                        }">
+                            ${isPaid ? 'Paid (Dah Bayar)' : 'Unpaid (Belum)'}
+                        </span>
+                    </div>
+
+                    <!-- Butiran Lokasi Meja / Alamat -->
+                    <div class="bg-navy-900 border border-gold-500/5 px-3 py-2.5 rounded-xl mb-4 flex items-center gap-2 text-xs">
+                        <i data-lucide="navigation-2" class="w-4 h-4 text-gold-400"></i>
+                        <div>
+                            <span class="text-[9px] text-gray-500 block uppercase font-bold tracking-widest">${order.orderType || 'Dine-in'}</span>
+                            <span class="text-white font-bold">${order.tableOrAddress || 'Tiada maklumat'}</span>
+                        </div>
+                    </div>
+
+                    <!-- Items List -->
+                    <div class="space-y-1 mb-4 max-h-36 overflow-y-auto pr-1 bg-navy-900/30 p-2.5 rounded-xl border border-gray-800">
+                        ${itemsHtml}
+                    </div>
+
+                    <!-- Nota Masakan -->
+                    ${order.note ? `
+                        <div class="bg-navy-900 border-l-2 border-gold-500 p-2.5 rounded-r-lg mb-4 text-xs italic text-gray-400">
+                            "${order.note}"
+                        </div>
+                    ` : ''}
+
+                    <!-- Total Price Ringkasan -->
+                    <div class="flex justify-between items-center py-2 mb-4 border-t border-b border-gray-800">
+                        <span class="text-xs text-gray-400 font-bold">Jumlah Bayaran:</span>
+                        <span class="font-serif text-lg font-black text-gold-400">RM ${(order.totalPrice || 0).toFixed(2)}</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2.5">
+                        <button onclick="toggleStatusBayaran('${order.id}', ${isPaid})" class="flex-grow ${
+                            isPaid 
+                            ? 'bg-yellow-600 hover:bg-yellow-500 text-white' 
+                            : 'bg-green-600 hover:bg-green-500 text-white'
+                        } font-bold py-2.5 px-3 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md">
+                            <i data-lucide="${isPaid ? 'refresh-cw' : 'check-circle'}" class="w-4 h-4"></i>
+                            ${isPaid ? 'Belum Bayar' : 'Selesai Bayar (Paid)'}
+                        </button>
+                        
+                        <button onclick="padamPesanan('${order.id}')" class="bg-navy-900 hover:bg-red-950 text-gray-500 hover:text-red-400 border border-gray-800 hover:border-red-500/20 p-2.5 rounded-xl transition-colors" title="Hapus Rekod">
+                            <i data-lucide="trash-2" class="w-4.5 h-4.5"></i>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(orderCard);
+            });
+            lucide.createIcons();
+        }
+
+        // Kemaskini Status Pembayaran "Paid" atau "Unpaid" ke Firebase Firestore (Sesuai RULE 1 & 3)
+        async function toggleStatusBayaran(orderId, isPaidSemasa) {
+            try {
+                const statusBaru = isPaidSemasa ? 'baru' : 'paid';
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'orders', orderId);
+                
+                await updateDoc(docRef, {
+                    status: statusBaru
+                });
+
+                tunjukToast("Status Dikemas kini", `Pesanan berjaya ditandai sebagai ${statusBaru.toUpperCase()}.`);
+            } catch (err) {
+                console.error("Gagal kemaskini status:", err);
+                tunjukToast("Gagal", "Ralat ketika mengemas kini status pembayaran.", true);
+            }
+        }
+
+        // Padam Pesanan Sekiranya Ada Ralat / Spam Pesanan (RULE 1 & 3)
+        async function padamPesanan(orderId) {
+            const pengesahan = confirm("Adakah anda pasti mahu menghapuskan pesanan ini secara kekal dari rekod?");
+            if (!pengesahan) return;
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'orders', orderId);
+                await deleteDoc(docRef);
+                tunjukToast("Pesanan Dihapuskan", "Rekod pesanan telah dibuang dari pangkalan data.");
+            } catch (err) {
+                console.error("Gagal memadam pesanan:", err);
+                tunjukToast("Ralat Memadam", "Tidak berjaya membuang rekod pesanan.", true);
+            }
+        }
+
+        // Tapis Senarai Pesanan (Butang UI filter)
+        function tapisPesanan(kategori) {
+            penapisSemasa = kategori;
+            
+            ['semua', 'unpaid', 'paid'].forEach(kat => {
+                const btn = document.getElementById(`btn-filt-${kat}`);
+                if (kat === kategori) {
+                    btn.className = "px-3 py-1.5 rounded-lg font-semibold bg-gold-500 text-navy-950 shadow-sm";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg font-semibold text-gray-400 hover:text-gold-400";
+                }
+            });
+
+            kemaskiniSenaraiOrdersUI();
+        }
+
+        // Aliran Penukaran Tab Halaman (Orders vs History/Growth)
+        function tukarTab(tabName) {
+            const tabOrders = document.getElementById('tab-orders');
+            const tabHistory = document.getElementById('tab-history');
+            const sectOrders = document.getElementById('sect-orders');
+            const sectHistory = document.getElementById('sect-history');
+
+            if (tabName === 'orders') {
+                tabOrders.className = "px-5 py-2 rounded-lg font-semibold transition-all duration-200 bg-gold-500 text-navy-950 flex items-center gap-2";
+                tabHistory.className = "px-5 py-2 rounded-lg font-semibold transition-all duration-200 text-gray-400 hover:text-gold-400 flex items-center gap-2";
+                sectOrders.classList.remove('hidden');
+                sectHistory.classList.add('hidden');
+            } else {
+                tabHistory.className = "px-5 py-2 rounded-lg font-semibold transition-all duration-200 bg-gold-500 text-navy-950 flex items-center gap-2";
+                tabOrders.className = "px-5 py-2 rounded-lg font-semibold transition-all duration-200 text-gray-400 hover:text-gold-400 flex items-center gap-2";
+                sectHistory.classList.remove('hidden');
+                sectOrders.classList.add('hidden');
+                // Segarkan analitis & sejarah
+                prosesAnalitisDanSejarah();
+            }
+        }
+
+        // Pembantu Format Tarikh & Masa
+        function dapatkanTarikhHariIni() {
+            const d = new Date();
+            return formatKeTarikhSederhana(d);
+        }
+
+        function formatKeTarikhSederhana(dObj) {
+            const yyyy = dObj.getFullYear();
+            const mm = String(dObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dObj.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function formatTarikhMesra(tarikhStr) {
+            if (!tarikhStr || tarikhStr === "Tiada Data") return tarikhStr;
+            const parts = tarikhStr.split('-');
+            if (parts.length !== 3) return tarikhStr;
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            return d.toLocaleDateString('ms-MY', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        // Tampilkan Toast Amaran Tanpa browser alerts
+        function tunjukToast(tajuk, mesej, isError = false) {
+            const toast = document.getElementById('toast-notif');
+            const tTitle = document.getElementById('toast-title');
+            const tMsg = document.getElementById('toast-message');
+
+            tTitle.innerText = tajuk;
+            tMsg.innerText = mesej;
+
+            if (isError) {
+                toast.classList.replace('bg-green-600', 'bg-red-600');
+                toast.classList.replace('border-green-400', 'border-red-400');
+            } else {
+                toast.classList.replace('bg-red-600', 'bg-green-600');
+                toast.classList.replace('border-red-400', 'border-green-400');
+            }
+
+            // Slide in
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-32', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3500);
+        }
+
+        // Eksport fungsi ke Window Global bagi membolehkan inline HTML click handler berfungsi
+        window.aktifkanBunyi = aktifkanBunyi;
+        window.tapisPesanan = tapisPesanan;
+        window.tukarTab = tukarTab;
+        window.toggleStatusBayaran = toggleStatusBayaran;
+        window.padamPesanan = padamPesanan;
+
+    </script>
+</body>
+</html>
