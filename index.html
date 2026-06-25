@@ -1,647 +1,566 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warung Ibu Admin</title>
-    <!-- Tailwind CSS for modern dashboard design -->
+    <title>Portfolio | Hanis Haziera - Fiber Network Designer & AI-Assisted Application Builder</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for premium branding -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs (Compat versions for global usage in vanilla html) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#030712',
+                            card: '#0B132B',
+                            primary: '#3B82F6',   // Neon Blue
+                            secondary: '#10B981', // Cyber Green
+                            accent: '#8B5CF6',    // Purple Tech
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f6f8fa;
-            color: #2c2520;
+            background-color: #030712;
+            color: #f3f4f6;
+            scroll-behavior: smooth;
         }
-        
-        .font-serif-elegant {
-            font-family: 'Playfair Display', serif;
-        }
-        
-        .font-classic {
-            font-family: 'Cinzel', serif;
-        }
-
-        /* Traditional Batik Accents for luxury brand feel */
-        .batik-bg {
-            background-color: #111e29;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M40 0l40 40-40 40L0 40z' fill='%23c5a850' fill-opacity='0.08'/%3E%3Cpath d='M40 10l30 30-30 30-30-30z' fill='%231a2e40' fill-opacity='0.2'/%3E%3Ccircle cx='40' cy='40' r='5' fill='%23c5a850' fill-opacity='0.3'/%3E%3C/svg%3E");
-        }
-
-        .text-gold {
-            color: #bfa34a;
-        }
-        
-        .bg-gold {
-            background-color: #bfa34a;
-        }
-        
-        .bg-navy {
-            background-color: #111e29;
-        }
-
-        /* Custom Scrollbar */
+        /* Glowing Scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #030712;
         }
         ::-webkit-scrollbar-thumb {
-            background: #c5a850;
-            border-radius: 10px;
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+        /* Neon Glow Effects */
+        .neon-glow-blue {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+        .neon-glow-green {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+        }
+        .glass-panel {
+            background: rgba(11, 19, 43, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
+<body class="font-sans antialiased overflow-x-hidden selection:bg-brand-primary/30 selection:text-white">
 
-    <!-- OVERLAY LOADING SPINNER -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-[#111e29] z-50 flex flex-col items-center justify-center transition-opacity duration-300">
-        <div class="relative w-24 h-24 mb-4">
-            <div class="absolute inset-0 border-4 border-dashed border-[#c5a850] rounded-full animate-spin"></div>
-            <div class="absolute inset-2 border-2 border-double border-white rounded-full flex items-center justify-center">
-                <span class="text-[#c5a850] font-classic font-bold text-lg">WI</span>
+    <!-- Interactive Background Fluid/Water Canvas -->
+    <canvas id="fluid-flow-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-25"></canvas>
+
+    <!-- Header / Main Navigation -->
+    <header class="fixed top-0 left-0 w-full z-50 transition-all duration-300 glass-panel border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-primary to-brand-accent flex items-center justify-center neon-glow-blue">
+                    <i data-lucide="cpu" class="w-5 h-5 text-white animate-pulse"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">HANIS HAZIERA</span>
+                    <span class="block text-xs text-brand-secondary font-mono tracking-widest uppercase">PORTFOLIO</span>
+                </div>
             </div>
         </div>
-        <p class="text-white font-serif-elegant tracking-widest text-lg">Menyambung Ke Dapur Utama...</p>
-        <p class="text-xs text-gray-400 mt-2">Sistem Pengurusan Jualan & Pesanan Digital</p>
-    </div>
+    </header>
 
-    <!-- MAIN DASHBOARD WRAPPER -->
-    <div class="flex-grow flex flex-col">
-        <!-- Dashboard Header -->
-        <header class="bg-navy text-white shadow-xl sticky top-0 z-30">
-            <div class="h-1 bg-[#c5a850]"></div>
-            <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-                <div class="flex items-center gap-3">
-                    <span class="p-2 bg-[#c5a850]/15 text-[#c5a850] rounded-xl border border-[#c5a850]/30">
-                        <i class="fa-solid fa-desktop text-xl"></i>
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-24 right-4 z-50 flex flex-col space-y-3"></div>
+
+    <!-- Centered Hero Section -->
+    <section class="relative pt-36 pb-24 md:pt-48 md:pb-32 overflow-hidden">
+        <!-- Background Light & Grid -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.1),transparent_50%)]"></div>
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-primary/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-accent/10 rounded-full blur-3xl"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-4xl mx-auto text-center space-y-6">
+                
+                <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full glass-panel border border-brand-primary/20 text-brand-primary text-xs font-mono tracking-wider">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-primary opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-primary"></span>
                     </span>
-                    <div>
-                        <h2 class="text-lg font-classic font-bold tracking-wide">WARUNG IBU ADMIN</h2>
-                        <p class="text-[10px] text-gray-300">Warung Ibu &bull; Urus Jualan, Jejaki Pesanan & Analisis Tunai</p>
-                    </div>
+                    <span>FIBER NETWORK DESIGNER &bull; AI-ASSISTED APPLICATION BUILDER</span>
                 </div>
                 
-                <!-- Internal Navigation Tabs -->
-                <div class="flex bg-slate-800/80 p-1 rounded-xl border border-slate-700">
-                    <button onclick="switchTab('orders')" id="tabOrders" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all text-white bg-[#c5a850]">
-                        <i class="fa-solid fa-receipt mr-1"></i> Pesanan Aktif
-                    </button>
-                    <button onclick="switchTab('history')" id="tabHistory" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all text-gray-300 hover:text-white">
-                        <i class="fa-solid fa-history mr-1"></i> Sejarah & Pertumbuhan
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <!-- TODAY'S GENERAL ANALYTICS -->
-        <section class="max-w-7xl mx-auto w-full px-4 pt-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Card 1: Sales Revenue Today -->
-                <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 block mb-1">Jumlah Jualan Hari Ini</span>
-                        <h3 class="text-3xl font-serif-elegant font-bold text-emerald-800" id="todaySales">RM 0.00</h3>
-                        <p class="text-[10px] text-gray-400 mt-1">Hanya daripada pesanan berstatus <span class="font-bold text-emerald-600">PAID</span></p>
-                    </div>
-                    <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 border border-emerald-100">
-                        <i class="fa-solid fa-coins text-xl"></i>
-                    </div>
-                </div>
-
-                <!-- Card 2: Total Customers Today -->
-                <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 block mb-1">Pelanggan Hari Ini</span>
-                        <h3 class="text-3xl font-serif-elegant font-bold text-blue-800" id="todayCustomers">0 Orang</h3>
-                        <p class="text-[10px] text-gray-400 mt-1">Berdasarkan jumlah resit pesanan unik</p>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 border border-blue-100">
-                        <i class="fa-solid fa-users text-xl"></i>
-                    </div>
-                </div>
-
-                <!-- Card 3: Pending Payments -->
-                <div class="bg-white p-5 rounded-2xl border border-amber-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 block mb-1">Menunggu Bayaran (Unpaid)</span>
-                        <h3 class="text-3xl font-serif-elegant font-bold text-amber-800" id="pendingPayments">RM 0.00</h3>
-                        <p class="text-[10px] text-gray-400 mt-1">Dari pelanggan yang sedang menjamu selera</p>
-                    </div>
-                    <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 border border-amber-100">
-                        <i class="fa-solid fa-cash-register text-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB CONTENT: LIVE ORDER MONITOR -->
-        <section id="tabOrdersContent" class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                <div>
-                    <h3 class="text-xl font-serif-elegant font-bold text-navy">Pesanan Aktif Hari Ini</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Pantau resit pesanan, kemas kini bayaran bilik meja dengan serta-merta.</p>
-                </div>
-
-                <!-- Live filter badges -->
-                <div class="flex items-center gap-1.5 bg-gray-100 p-1 rounded-lg border border-gray-200">
-                    <button onclick="setFilter('all')" id="filterAll" class="px-3 py-1 text-xs font-bold rounded-md bg-white text-navy shadow-sm">Semua</button>
-                    <button onclick="setFilter('unpaid')" id="filterUnpaid" class="px-3 py-1 text-xs font-bold rounded-md text-gray-600 hover:text-navy">Belum Bayar</button>
-                    <button onclick="setFilter('paid')" id="filterPaid" class="px-3 py-1 text-xs font-bold rounded-md text-gray-600 hover:text-navy">Sudah Bayar</button>
-                </div>
-            </div>
-
-            <!-- Grid orders monitor -->
-            <div id="liveOrdersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Loaded Dynamically via JS and Firestore Live listeners -->
-            </div>
-
-            <!-- Empty State -->
-            <div id="noLiveOrders" class="hidden text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                <div class="text-gray-300 text-5xl mb-4"><i class="fa-solid fa-clipboard-check"></i></div>
-                <h4 class="font-bold text-gray-700">Tiada Pesanan Direkodkan</h4>
-                <p class="text-xs text-gray-400 mt-1">Belum ada pesanan aktif yang menepati saringan tapisan ini.</p>
-            </div>
-        </section>
-
-        <!-- TAB CONTENT: HISTORY & BUSINESS GROWTH -->
-        <section id="tabHistoryContent" class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow hidden">
-            <div class="mb-6">
-                <h3 class="text-xl font-serif-elegant font-bold text-navy">Sejarah Pendapatan & Pertumbuhan</h3>
-                <p class="text-xs text-gray-500 mt-0.5">Analisis pendapatan perniagaan harian bagi merekodkan prestasi jualan keseluruhan.</p>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
-                <div class="p-4 bg-navy text-white flex justify-between items-center">
-                    <span class="text-xs font-classic tracking-wider uppercase font-bold">Ringkasan Prestasi Harian</span>
-                    <span class="text-[10px] text-gray-400">Tersusun mengikut Tarikh Terbaru</span>
-                </div>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-white">
+                    Turning Ideas Into <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-blue-400 to-brand-secondary">Working Applications</span>
+                </h1>
                 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                                <th class="p-4">Tarikh</th>
-                                <th class="p-4">Bilangan Pelanggan (Resit Unik)</th>
-                                <th class="p-4">Kutipan Jualan Berjaya (Paid)</th>
-                                <th class="p-4">Belum Dikutip (Unpaid)</th>
-                                <th class="p-4">Tindakan</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyTableBody" class="text-xs text-gray-700 divide-y divide-gray-100">
-                            <!-- Populated in memory dynamically by grouping timestamps -->
-                        </tbody>
-                    </table>
-                </div>
+                <p class="text-gray-400 text-lg sm:text-xl max-w-2xl mx-auto">
+                    Building practical web applications using Gemini, Firebase and Supabase to solve real business and user problems.
+                </p>
 
-                <div id="noHistoryData" class="hidden text-center py-16">
-                    <div class="text-gray-300 text-4xl mb-3"><i class="fa-solid fa-chart-line"></i></div>
-                    <p class="text-xs text-gray-400 font-bold">Tiada Rekod Sejarah Dijumpai</p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+                    <a href="#projects" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-lg bg-brand-primary text-white font-semibold shadow-lg hover:bg-brand-primary/90 transition-all neon-glow-blue">
+                        <i data-lucide="layers" class="w-5 h-5"></i>
+                        <span>Explore Projects</span>
+                    </a>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
-    <!-- FOOTER -->
-    <footer class="bg-navy text-gray-400 text-center py-4 border-t border-[#c5a850]/20 text-[11px] tracking-wide relative">
-        <div class="absolute inset-0 opacity-5 batik-bg pointer-events-none"></div>
-        <div class="relative z-10 max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <p>&copy; 2026 Warung Ibu Admin. Portal Sistem Pentadbiran Warung Ibu Bersepadu.</p>
-            <p class="text-xs text-gray-400">Sambungan Automatik Terus ke Cloud Firebase</p>
+    <!-- Project Section -->
+    <section id="projects" class="py-24 bg-brand-dark/50 relative border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-20 space-y-3">
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Featured Project Showcases</h2>
+                <p class="text-gray-400">A detailed breakdown of highly functional software operations, live updates, and system architectural achievements.</p>
+            </div>
+
+            <!-- PROJECT 1: Restaurant QR Ordering & Management System -->
+            <div class="mb-32 space-y-12">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-14 h-14 rounded-2xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
+                            <i data-lucide="qr-code" class="w-7 h-7 text-brand-primary"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-mono text-brand-primary uppercase font-bold">PROJECT 1</span>
+                            <h3 class="text-3xl font-extrabold text-white">Restaurant QR Ordering & Management System</h3>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-brand-primary/10 text-brand-primary text-xs px-3 py-1 rounded-full font-mono border border-brand-primary/20">AI Co-Developed</span>
+                        <span class="bg-white/5 text-gray-300 text-xs px-3 py-1 rounded-full font-mono border border-white/5">Firebase + Supabase</span>
+                    </div>
+                </div>
+
+                <!-- Main Project Layout Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                    
+                    <!-- Left Column - Screenshots Block (7 cols) -->
+                    <div class="lg:col-span-7 space-y-16">
+                        
+                        <!-- Live Interactive App Preview -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-gray-200 flex items-center space-x-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-brand-secondary animate-pulse"></span>
+                                    <span>Interactive Preview: App Simulator</span>
+                                </span>
+                                <span class="text-xs font-mono text-brand-secondary uppercase bg-brand-secondary/10 px-2 py-0.5 rounded border border-brand-secondary/20">Paparan Pratonton Sahaja</span>
+                            </div>
+                            
+                            <!-- Interactive Smartphone Mockup Container (Enlarged to 400px width) -->
+                            <div class="relative rounded-[2.5rem] border-8 border-gray-800 bg-brand-dark/90 overflow-hidden aspect-[9/16] w-full max-w-[400px] mx-auto shadow-2xl ring-1 ring-white/10 group hover:border-brand-secondary/40 transition-colors duration-300">
+                                <!-- Top Simulated Speaker Notch -->
+                                <div class="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-4 bg-gray-800 rounded-full z-20 flex items-center justify-center">
+                                    <div class="w-10 h-1 bg-gray-700 rounded-full"></div>
+                                </div>
+
+                                <!-- Sandbox Live App Iframe -->
+                                <iframe src="https://h3studio.interactivelink.site/Menu" title="Interactive Menu Preview" onload="resizeIframe(this)" class="w-full h-full border-0 z-10 relative bg-brand-dark" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+
+                                <!-- Simulated Bottom Home Swipe Indicator Bar -->
+                                <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-20 h-1 bg-gray-700 rounded-full z-20"></div>
+                            </div>
+                            <p class="text-center text-[11px] text-gray-500 max-w-sm mx-auto leading-relaxed">
+                                Rasai sendiri aliran pesanan pelanggan yang lancar secara langsung. Tatal dan navigasi platform bersepadu secara terus di dalam simulator telefon pintar ini.
+                            </p>
+                        </div>
+
+                        <!-- Live Interactive Admin Dashboard Preview -->
+                        <div class="space-y-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <span class="text-sm font-bold text-gray-200 flex items-center space-x-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-brand-primary animate-pulse"></span>
+                                    <span>Interactive Preview: Admin Dashboard</span>
+                                </span>
+                                <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-brand-accent/20 border border-brand-accent/45 text-brand-accent text-xs font-mono">
+                                    <i data-lucide="key-round" class="w-3.5 h-3.5 animate-pulse"></i>
+                                    <span>Password: <strong class="text-white select-all">595959</strong></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Desktop/Laptop Browser Simulator Mockup - Enforced Width & Aspect -->
+                            <div class="relative rounded-xl border border-white/10 bg-brand-dark/95 overflow-hidden w-full max-w-4xl mx-auto shadow-2xl hover:border-brand-primary/40 transition-colors duration-300 ring-1 ring-white/10 group aspect-video">
+                                <!-- Browser Header / Top Bar (URL Hidden) -->
+                                <div class="bg-gray-900/90 px-4 py-3 flex items-center space-x-3 border-b border-white/5">
+                                    <!-- Window Control Dots -->
+                                    <div class="flex space-x-1.5 flex-shrink-0">
+                                        <span class="w-3 h-3 rounded-full bg-red-500/85"></span>
+                                        <span class="w-3 h-3 rounded-full bg-yellow-500/85"></span>
+                                        <span class="w-3 h-3 rounded-full bg-green-500/85"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Sandbox Live App Iframe -->
+                                <iframe src="https://h3studio.interactivelink.site/Admin_WarungIbu" title="Interactive Admin Dashboard Preview" class="w-full h-[calc(100%-40px)] border-0 relative bg-brand-dark" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column - Project Profile & Details (5 cols) -->
+                    <div class="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
+                        
+                        <!-- Project Overview & Problem Solved -->
+                        <div class="glass-panel p-6 rounded-xl border border-white/10 space-y-4">
+                            <div class="flex items-center space-x-2 text-brand-secondary">
+                                <i data-lucide="info" class="w-5 h-5"></i>
+                                <span class="text-xs font-mono uppercase tracking-widest font-bold">Project Overview</span>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                A web-based restaurant ordering and management system designed to simplify customer ordering, order tracking, payment monitoring and sales reporting. The system allows customers to place orders directly from their smartphones while helping restaurant owners manage daily operations more efficiently.
+                            </p>
+                            
+                            <div class="border-t border-white/5 pt-4 space-y-3">
+                                <div class="flex items-center space-x-2 text-brand-primary">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    <span class="text-xs font-mono uppercase tracking-widest font-bold">Problem Solved</span>
+                                </div>
+                                <p class="text-gray-400 text-sm leading-relaxed">
+                                    Many small restaurants still rely on manual order taking and handwritten records. This system helps:
+                                </p>
+                                <ul class="space-y-2 text-sm text-gray-300">
+                                    <li class="flex items-start space-x-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-secondary mt-0.5 flex-shrink-0"></i>
+                                        <span>Reduce order-taking errors</span>
+                                    </li>
+                                    <li class="flex items-start space-x-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-secondary mt-0.5 flex-shrink-0"></i>
+                                        <span>Improve order tracking</span>
+                                    </li>
+                                    <li class="flex items-start space-x-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-secondary mt-0.5 flex-shrink-0"></i>
+                                        <span>Simplify payment monitoring</span>
+                                    </li>
+                                        <li class="flex items-start space-x-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-secondary mt-0.5 flex-shrink-0"></i>
+                                        <span>Organize sales records</span>
+                                    </li>
+                                    <li class="flex items-start space-x-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-secondary mt-0.5 flex-shrink-0"></i>
+                                        <span>Improve operational efficiency</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Key Features Block -->
+                        <div class="glass-panel p-6 rounded-xl border border-white/10 space-y-4">
+                            <div class="flex items-center space-x-2 text-brand-accent">
+                                <i data-lucide="zap" class="w-5 h-5"></i>
+                                <span class="text-xs font-mono uppercase tracking-widest font-bold">Key Features</span>
+                            </div>
+                            
+                            <div class="space-y-4 text-gray-300 text-sm">
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse"></span>
+                                        <span>QR Ordering System</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Customers scan a QR code and enter their table number before placing orders.</p>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-secondary"></span>
+                                        <span>Order Management Dashboard</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Restaurant staff can view and manage incoming orders in real time. Features include active orders, order status tracking, and payment status monitoring.</p>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span>
+                                        <span>Sales Dashboard</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Provides business insights including daily sales, historical sales records, order statistics, and revenue tracking.</p>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-primary"></span>
+                                        <span>Menu Management</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Restaurant owners can add menu items, edit menu information, update pricing, and manage menu availability dynamically.</p>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-secondary"></span>
+                                        <span>PDF Report Generation</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Allows restaurant owners to download and keep detailed order records for future reference.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technologies Used Block -->
+                        <div class="glass-panel p-6 rounded-xl border border-white/10 space-y-3">
+                            <div class="flex items-center space-x-2 text-gray-400">
+                                <i data-lucide="cpu" class="w-4 h-4"></i>
+                                <span class="text-xs font-mono uppercase tracking-widest font-bold">Technologies Used</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-brand-primary/10 text-brand-primary text-xs px-2.5 py-1 rounded border border-brand-primary/20 font-mono">Google Gemini</span>
+                                <span class="bg-brand-secondary/10 text-brand-secondary text-xs px-2.5 py-1 rounded border border-brand-secondary/20 font-mono font-bold">Firebase</span>
+                                <span class="bg-brand-accent/10 text-brand-accent text-xs px-2.5 py-1 rounded border border-brand-accent/20 font-mono">Supabase</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROJECT 2: Interactive Digital Wedding Card -->
+            <div class="space-y-12">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-14 h-14 rounded-2xl bg-brand-secondary/10 flex items-center justify-center border border-brand-secondary/20">
+                            <i data-lucide="mail" class="w-7 h-7 text-brand-secondary"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-mono text-brand-secondary uppercase font-bold">PROJECT 2</span>
+                            <h3 class="text-3xl font-extrabold text-white">Interactive Wedding Invitation</h3>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-brand-secondary/10 text-brand-secondary text-xs px-3 py-1 rounded-full font-mono border border-brand-secondary/20">AI Co-Developed</span>
+                        <span class="bg-white/5 text-gray-300 text-xs px-3 py-1 rounded-full font-mono border border-white/5">Firebase Realtime</span>
+                    </div>
+                </div>
+
+                <!-- Main Project Layout Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                    
+                    <!-- Left Column -->
+                    <div class="lg:col-span-7 space-y-16">
+                        
+                        <!-- Interactive Preview Smartphone Mockup -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-gray-200 flex items-center space-x-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-brand-primary"></span>
+                                    <span>Interactive Preview: Wedding Invitation</span>
+                                </span>
+                            </div>
+                            
+                            <!-- Portrait Simulated Smartphone Mockup Container -->
+                            <div class="relative rounded-[2.5rem] border-8 border-gray-800 bg-brand-dark/90 overflow-hidden aspect-[9/16] w-full max-w-[400px] mx-auto shadow-2xl ring-1 ring-white/10 group hover:border-brand-primary/40 transition-colors duration-300">
+                                <!-- Top Simulated Notch -->
+                                <div class="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-4 bg-gray-800 rounded-full z-20 flex items-center justify-center">
+                                    <div class="w-10 h-1 bg-gray-700 rounded-full"></div>
+                                </div>
+
+                                <!-- Sandbox Live App Iframe -->
+                                <iframe src="https://h3studio.interactivelink.site/wedding_invitation" title="Wedding Invitation Preview" onload="resizeIframe(this)" class="w-full h-full border-0 z-10 relative bg-brand-dark" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+
+                                <!-- Simulated Bottom Home Swipe Indicator Bar -->
+                                <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-20 h-1 bg-gray-700 rounded-full z-20"></div>
+                            </div>
+                            <p class="text-center text-[11px] text-gray-500 max-w-sm mx-auto leading-relaxed">
+                                Experience the interactive digital wedding invitation. Navigate through the invitation details and enjoy the guest wish submission flow.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Project Profile & Details -->
+                    <div class="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
+                        
+                        <!-- Project Overview & Problem Solved -->
+                        <div class="glass-panel p-6 rounded-xl border border-white/10 space-y-4">
+                            <div class="flex items-center space-x-2 text-brand-secondary">
+                                <i data-lucide="info" class="w-5 h-5"></i>
+                                <span class="text-xs font-mono uppercase tracking-widest font-bold">Project Overview</span>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                A modern digital wedding invitation platform designed to improve guest engagement and provide wedding information in a convenient and interactive format.
+                            </p>
+                            
+                            <div class="border-t border-white/5 pt-4 space-y-3">
+                                <div class="flex items-center space-x-2 text-brand-primary">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    <span class="text-xs font-mono uppercase tracking-widest font-bold">Problem Solved</span>
+                                </div>
+                                <p class="text-gray-400 text-sm leading-relaxed">
+                                    Traditional wedding invitations provide limited interaction and often require guests to search separately for event details and directions. This platform provides all important information in one place.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Key Features Block -->
+                        <div class="glass-panel p-6 rounded-xl border border-white/10 space-y-4">
+                            <div class="flex items-center space-x-2 text-brand-accent">
+                                <i data-lucide="zap" class="w-5 h-5"></i>
+                                <span class="text-xs font-mono uppercase tracking-widest font-bold">Key Features</span>
+                            </div>
+                            
+                            <div class="space-y-4 text-gray-300 text-sm">
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse"></span>
+                                        <span>Real-Time Guest Wishes</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Guests can submit wishes and messages that appear instantly without requiring page refresh.</p>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-secondary"></span>
+                                        <span>Event Information Hub</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Provides important wedding information including event details, venue information, and guest instructions.</p>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span>
+                                        <span>Wedding Itinerary</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Displays the event schedule to help guests understand the flow of the ceremony and reception.</p>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-primary"></span>
+                                        <span>Location & Navigation</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Integrated location guidance helps guests easily find the wedding venue.</p>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-secondary"></span>
+                                        <span>Background Music Experience</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Creates a more engaging and personalized invitation experience.</p>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <h5 class="font-bold text-white flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span>
+                                        <span>Mobile-Friendly Design</span>
+                                    </h5>
+                                    <p class="text-gray-400 pl-3.5 text-xs leading-relaxed">Optimized for smartphones and tablets for easy access and sharing.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technologies Used Block -->
+                        <div class="glass-panel p-6 rounded-xl border border-white/10 space-y-3">
+                            <div class="flex items-center space-x-2 text-gray-400">
+                                <i data-lucide="cpu" class="w-4 h-4"></i>
+                                <span class="text-xs font-mono uppercase tracking-widest font-bold">Technologies Used</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-brand-primary/10 text-brand-primary text-xs px-2.5 py-1 rounded border border-brand-primary/20 font-mono">Google Gemini</span>
+                                <span class="bg-brand-secondary/10 text-brand-secondary text-xs px-2.5 py-1 rounded border border-brand-secondary/20 font-mono font-bold">Firebase</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- About Me Section -->
+    <section id="about" class="py-24 relative border-t border-white/5 overflow-hidden">
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                <span class="text-xs font-mono text-brand-secondary uppercase tracking-widest font-bold">PROFILE</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">About Me</h2>
+                <div class="w-12 h-1 bg-gradient-to-r from-brand-primary to-brand-secondary mx-auto rounded-full mt-2"></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                    <h3 class="text-2xl font-bold text-white leading-tight">Bridging <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">Physical Networks</span> and <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-secondary to-brand-accent">Digital Intelligence</span></h3>
+                    <div class="space-y-4 text-gray-300 leading-relaxed text-base">
+                        <p>I have professional experience in fiber network planning and design, complemented by a strong passion for AI-assisted application development.</p>
+                        <p>By leveraging <span class="text-white font-semibold">Google Gemini</span>, <span class="text-white font-semibold">Firebase</span>, and <span class="text-white font-semibold">Supabase</span>, I build custom web solutions that transform manual processes into efficient digital experiences.</p>
+                    </div>
+                </div>
+                <div class="lg:col-span-5 grid grid-cols-1 gap-6">
+                    <div class="glass-panel p-6 rounded-2xl border border-white/10 hover:border-brand-primary/30 transition-all duration-300 group">
+                        <div class="flex items-start space-x-4"><div class="w-12 h-12 rounded-xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20 group-hover:scale-110 transition-transform duration-300 flex-shrink-0"><i data-lucide="network" class="w-6 h-6 text-brand-primary"></i></div><div><h4 class="text-lg font-bold text-white mb-1">Network Infrastructure</h4><p class="text-sm text-gray-400">Specializing in fiber blueprint planning, route mapping, and infrastructure design.</p></div></div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl border border-white/10 hover:border-brand-secondary/30 transition-all duration-300 group">
+                        <div class="flex items-start space-x-4"><div class="w-12 h-12 rounded-xl bg-brand-secondary/10 flex items-center justify-center border border-brand-secondary/20 group-hover:scale-110 transition-transform duration-300 flex-shrink-0"><i data-lucide="sparkles" class="w-6 h-6 text-brand-secondary"></i></div><div><h4 class="text-lg font-bold text-white mb-1">AI-Assisted Development</h4><p class="text-sm text-gray-400">Co-building modern system architectures, backend workflows, and real-time database integrations.</p></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-dark border-t border-white/5 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+            <div class="flex items-center justify-center space-x-3">
+                <div class="w-8 h-8 rounded bg-brand-primary/10 flex items-center justify-center"><i data-lucide="cpu" class="w-4 h-4 text-brand-primary"></i></div>
+                <span class="font-extrabold text-white tracking-wider">HANIS HAZIERA PORTFOLIO</span>
+            </div>
+            <p class="text-xs text-gray-500">&copy; 2026 Hanis Haziera Portfolio. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- INTERACTIVE JAVASCRIPT CONTROLLERS -->
+    <!-- Scripts -->
     <script>
-        // ------------------------------------------------------------
-        // 1. CONFIGURATION & STATE
-        // ------------------------------------------------------------
-        const firebaseConfig = {
-            apiKey: "AIzaSyDyrX1WmJ67x3w5PDAW6v2yJazT49ZQa7g",
-            authDomain: "restoran-dd4bd.firebaseapp.com",
-            databaseURL: "https://restoran-dd4bd-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "restoran-dd4bd",
-            storageBucket: "restoran-dd4bd.firebasestorage.app",
-            messagingSenderId: "44849081363",
-            appId: "1:44849081363:web:1a56f2ebc972f5227be3e6",
-            measurementId: "G-GME7877LYX"
-        };
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'restoran-dd4bd';
+        lucide.createIcons();
+        function resizeIframe(iframe) { try { if (iframe.contentWindow && iframe.contentWindow.document) { iframe.style.height = iframe.contentWindow.document.documentElement.scrollHeight + 'px'; } } catch (e) {} }
         
-        let db;
-        let auth;
-        let globalOrders = []; // Keeps all read orders synchronized in local memory
-        let filterType = 'all'; // 'all', 'unpaid', 'paid'
-        let currentTab = 'orders'; // 'orders', 'history'
-
-        // ------------------------------------------------------------
-        // 2. FIREBASE INITIALIZATION & SIGN-IN
-        // ------------------------------------------------------------
-        window.addEventListener('DOMContentLoaded', async () => {
-            try {
-                // Read from environment if config is injected dynamically, otherwise fallback strictly to project config
-                const activeConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
-                
-                const app = firebase.initializeApp(activeConfig);
-                auth = firebase.auth(app);
-                db = firebase.firestore(app);
-
-                // Authenticate before any DB Query (MANDATORY RULE 3)
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await firebase.auth().signInWithCustomToken(__initial_auth_token);
-                } else {
-                    await firebase.auth().signInAnonymously();
-                }
-                console.log("Firebase connected successfully on Admin page.");
-                
-                // Fire live stream listener
-                listenToOrders();
-
-            } catch (err) {
-                console.error("Firebase connection error in Admin panel: ", err);
-            } finally {
-                // Clear loading screen
-                setTimeout(() => {
-                    document.getElementById('loadingOverlay').classList.add('opacity-0');
-                    setTimeout(() => {
-                        document.getElementById('loadingOverlay').classList.add('hidden');
-                    }, 300);
-                }, 800);
-            }
-        });
-
-        // ------------------------------------------------------------
-        // 3. FIRESTORE REAL-TIME LISTENER (RULE 2 COMPLIANT - LOCAL SORT)
-        // ------------------------------------------------------------
-        function listenToOrders() {
-            if (!db) {
-                console.warn("Firestore not ready. Running in Offline Simulator mode.");
-                simulateOfflineData();
-                return;
-            }
-
-            // RULE 1: STRICT PATHWAY REQUIRED -> /artifacts/{appId}/public/data/{collectionName}
-            const collectionRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('orders');
-
-            // Set real-time listener (MANDATORY RULE 2: No compounds or limit, fetch all and filter in memory)
-            collectionRef.onSnapshot((querySnapshot) => {
-                let tempOrders = [];
-                querySnapshot.forEach((doc) => {
-                    tempOrders.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
-
-                // Sort descending locally by timestamp (latest order at the top)
-                tempOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                
-                globalOrders = tempOrders;
-                console.log("Realtime Sync Completed with orders: ", globalOrders);
-
-                // Trigger fresh render on the active dashboard screen
-                renderDashboard();
-            }, (error) => {
-                console.error("Failed to connect live snapshot reader: ", error);
-            });
+        const canvas = document.getElementById('fluid-flow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
+        
+        let scrollSpeedMultiplier = 1;
+        let lastScrollY = window.scrollY;
+        window.addEventListener('scroll', () => { const currentScrollY = window.scrollY; scrollSpeedMultiplier = 1 + (Math.abs(currentScrollY - lastScrollY) * 0.1); lastScrollY = currentScrollY; });
+        let angle = 0;
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            scrollSpeedMultiplier += (1 - scrollSpeedMultiplier) * 0.05;
+            angle += 0.005 * scrollSpeedMultiplier;
+            drawWave(height * 0.4, '#3b82f6', 0.002, 35 * scrollSpeedMultiplier, angle);
+            drawWave(height * 0.5, '#10b981', 0.0015, 45 * scrollSpeedMultiplier, angle * 1.5);
+            drawWave(height * 0.6, '#8b5cf6', 0.001, 30 * scrollSpeedMultiplier, angle * 0.7);
+            requestAnimationFrame(animate);
         }
-
-        // ------------------------------------------------------------
-        // 4. TAB CONTROLLER SWITCH
-        // ------------------------------------------------------------
-        function switchTab(tab) {
-            currentTab = tab;
-            const tabOrders = document.getElementById('tabOrders');
-            const tabHistory = document.getElementById('tabHistory');
-            const contentOrders = document.getElementById('tabOrdersContent');
-            const contentHistory = document.getElementById('tabHistoryContent');
-
-            if (tab === 'orders') {
-                contentOrders.classList.remove('hidden');
-                contentHistory.classList.add('hidden');
-
-                tabOrders.className = "px-4 py-1.5 text-xs font-bold rounded-lg transition-all text-white bg-[#c5a850]";
-                tabHistory.className = "px-4 py-1.5 text-xs font-bold rounded-lg transition-all text-gray-300 hover:text-white";
-            } else {
-                contentOrders.classList.add('hidden');
-                contentHistory.classList.remove('hidden');
-
-                tabHistory.className = "px-4 py-1.5 text-xs font-bold rounded-lg transition-all text-white bg-[#c5a850]";
-                tabOrders.className = "px-4 py-1.5 text-xs font-bold rounded-lg transition-all text-gray-300 hover:text-white";
+        function drawWave(yOffset, color, frequency, amplitude, offset) {
+            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.shadowBlur = 15; ctx.shadowColor = color; ctx.globalCompositeOperation = 'screen';
+            for (let x = 0; x < width; x += 10) {
+                const scrollShift = (window.scrollY * 0.15) % height;
+                const y = (yOffset - scrollShift) + Math.sin(x * frequency + offset) * amplitude;
+                let finalY = y;
+                if (finalY < -100) finalY += height + 200;
+                if (finalY > height + 100) finalY -= height + 200;
+                x === 0 ? ctx.moveTo(x, finalY) : ctx.lineTo(x, finalY);
             }
-            renderDashboard();
+            ctx.stroke(); ctx.globalCompositeOperation = 'source-over'; ctx.shadowBlur = 0;
         }
-
-        // Filter status configuration
-        function setFilter(type) {
-            filterType = type;
-            document.querySelectorAll('[id^="filter"]').forEach(btn => {
-                btn.className = "px-3 py-1 text-xs font-bold rounded-md text-gray-600 hover:text-navy";
-            });
-
-            // Standard BM name matching for button activation
-            let btnId = "filterAll";
-            if (type === 'unpaid') btnId = "filterUnpaid";
-            if (type === 'paid') btnId = "filterPaid";
-
-            const activeBtn = document.getElementById(btnId);
-            if (activeBtn) {
-                activeBtn.className = "px-3 py-1 text-xs font-bold rounded-md bg-white text-navy shadow-sm";
-            }
-            renderDashboard();
-        }
-
-        // ------------------------------------------------------------
-        // 5. RENDERING CORE METRICS & TODAY'S ACTIVE LIST
-        // ------------------------------------------------------------
-        function renderDashboard() {
-            if (currentTab === 'history') {
-                renderHistoryTab();
-                return;
-            }
-
-            const liveOrdersGrid = document.getElementById('liveOrdersContainer');
-            const noOrdersNotice = document.getElementById('noLiveOrders');
-            
-            // Basic Metrics Elements
-            const textTodaySales = document.getElementById('todaySales');
-            const textTodayCustomers = document.getElementById('todayCustomers');
-            const textPendingPayments = document.getElementById('pendingPayments');
-
-            // 1. Calculations in memory (Today's boundaries locally)
-            const todayStr = new Date().toDateString(); // "Wed Jun 17 2026"
-
-            const todayOrders = globalOrders.filter(order => {
-                return new Date(order.createdAt).toDateString() === todayStr;
-            });
-
-            // Calculate metrics
-            let totalPaidToday = 0;
-            let totalUnpaidToday = 0;
-            let paidCustomerCount = 0;
-
-            todayOrders.forEach(order => {
-                if (order.paymentStatus === 'Paid') {
-                    totalPaidToday += order.totalPrice || 0;
-                    paidCustomerCount++; // 1 Paid Order = 1 Paid Customer
-                } else {
-                    totalUnpaidToday += order.totalPrice || 0;
-                }
-            });
-
-            textTodaySales.innerText = `RM ${totalPaidToday.toFixed(2)}`;
-            textTodayCustomers.innerText = `${paidCustomerCount} Orang`;
-            textPendingPayments.innerText = `RM ${totalUnpaidToday.toFixed(2)}`;
-
-            // 2. Filter list based on sub-filter selected ('all', 'unpaid', 'paid')
-            let displayOrders = todayOrders;
-            if (filterType === 'unpaid') {
-                displayOrders = todayOrders.filter(o => o.paymentStatus !== 'Paid');
-            } else if (filterType === 'paid') {
-                displayOrders = todayOrders.filter(o => o.paymentStatus === 'Paid');
-            }
-
-            if (displayOrders.length === 0) {
-                noOrdersNotice.classList.remove('hidden');
-                liveOrdersGrid.classList.add('hidden');
-                return;
-            } else {
-                noOrdersNotice.classList.add('hidden');
-                liveOrdersGrid.classList.remove('hidden');
-            }
-
-            // Populate active layout cards
-            liveOrdersGrid.innerHTML = '';
-            displayOrders.forEach(order => {
-                const isPaid = order.paymentStatus === 'Paid';
-                const createdTime = new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                const card = document.createElement('div');
-                card.className = `p-5 rounded-2xl border transition-all ${isPaid ? 'bg-slate-50 border-gray-200 opacity-80' : 'bg-white border-amber-200 shadow-sm'}`;
-                
-                // Construct inner list of items ordered
-                let itemsListHtml = '';
-                order.items.forEach(it => {
-                    itemsListHtml += `
-                        <div class="flex justify-between items-center text-xs py-1 border-b border-gray-100 last:border-0">
-                            <span class="text-gray-800"><span class="font-bold text-navy">${it.quantity}x</span> ${it.name}</span>
-                            <span class="font-semibold text-gray-500">RM ${(it.price * it.quantity).toFixed(2)}</span>
-                        </div>
-                    `;
-                });
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <span class="text-xs bg-[#111e29]/10 text-navy font-bold px-2.5 py-0.5 rounded-full border border-navy/10">
-                                MEJA ${order.tableNumber}
-                            </span>
-                            <p class="text-[10px] font-mono font-bold text-gray-400 mt-1">${order.receiptId}</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs text-gray-400 block">${createdTime}</span>
-                            <span class="inline-block mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800 animate-pulse'}">
-                                ${isPaid ? 'Paid' : 'Unpaid'}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1 mb-4 bg-gray-50/50 p-3 rounded-xl border border-gray-100">
-                        <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Sajian Dipesan:</p>
-                        ${itemsListHtml}
-                    </div>
-
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-xs font-semibold text-gray-500">Jumlah Bil:</span>
-                        <span class="text-lg font-serif-elegant font-bold text-navy">RM ${(order.totalPrice || 0).toFixed(2)}</span>
-                    </div>
-
-                    <!-- Toggle Cashier Payment Action Button -->
-                    <div class="pt-3 border-t border-gray-100 flex gap-2">
-                        ${isPaid ? `
-                            <button onclick="togglePaymentStatus('${order.receiptId}', 'Unpaid')" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-undo"></i> Tanda Belum Bayar
-                            </button>
-                        ` : `
-                            <button onclick="togglePaymentStatus('${order.receiptId}', 'Paid')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-                                <i class="fa-solid fa-check"></i> Sudah Bayar (PAID)
-                            </button>
-                        `}
-                    </div>
-                `;
-                liveOrdersGrid.appendChild(card);
-            });
-        }
-
-        // ------------------------------------------------------------
-        // 6. TOGGLE PAYMENT STATUS (UPDATES FIRESTORE)
-        // ------------------------------------------------------------
-        async function togglePaymentStatus(receiptId, newStatus) {
-            if (db) {
-                try {
-                    // RULE 1: STRICT PATHWAY REQUIRED -> /artifacts/{appId}/public/data/{collectionName}
-                    const docRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('orders').doc(receiptId);
-                    await docRef.update({
-                        paymentStatus: newStatus
-                    });
-                    console.log(`Order status updated successfully to: ${newStatus}`);
-                } catch (error) {
-                    console.error("Failed to update status on Firebase: ", error);
-                    alertCustom("Gagal mengemaskini status bayaran. Sila cuba sekali lagi.");
-                }
-            } else {
-                // Offline fallback modifications
-                const found = globalOrders.find(o => o.receiptId === receiptId);
-                if (found) {
-                    found.paymentStatus = newStatus;
-                    renderDashboard();
-                }
-            }
-        }
-
-        // ------------------------------------------------------------
-        // 7. OWNER REPORTING - HISTORY LOGS & DAILY AGGREGATIONS
-        // ------------------------------------------------------------
-        function renderHistoryTab() {
-            const tableBody = document.getElementById('historyTableBody');
-            const noData = document.getElementById('noHistoryData');
-
-            // 1. Group ALL orders by calendar Date dynamically in memory
-            const groupedByDate = {};
-
-            globalOrders.forEach(order => {
-                const dateObj = new Date(order.createdAt);
-                const localDateStr = dateObj.toLocaleDateString('ms-MY', { year: 'numeric', month: 'long', day: 'numeric' }); // E.g., "17 Jun 2026"
-                
-                if (!groupedByDate[localDateStr]) {
-                    groupedByDate[localDateStr] = {
-                        dateStr: localDateStr,
-                        totalPaid: 0,
-                        totalUnpaid: 0,
-                        uncollectedCount: 0,
-                        paidCount: 0,
-                        orderIds: []
-                    };
-                }
-
-                if (order.paymentStatus === 'Paid') {
-                    groupedByDate[localDateStr].totalPaid += order.totalPrice || 0;
-                    groupedByDate[localDateStr].paidCount++;
-                } else {
-                    groupedByDate[localDateStr].totalUnpaid += order.totalPrice || 0;
-                    groupedByDate[localDateStr].uncollectedCount++;
-                }
-                groupedByDate[localDateStr].orderIds.push(order.receiptId);
-            });
-
-            // Convert to array and sort chronological reverse
-            const historyList = Object.values(groupedByDate);
-
-            if (historyList.length === 0) {
-                noData.classList.remove('hidden');
-                tableBody.innerHTML = '';
-                return;
-            } else {
-                noData.classList.add('hidden');
-            }
-
-            tableBody.innerHTML = '';
-            historyList.forEach(day => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition-colors";
-                tr.innerHTML = `
-                    <td class="p-4 font-semibold text-gray-900">${day.dateStr}</td>
-                    <td class="p-4 text-gray-500">
-                        <span class="font-bold text-navy">${day.paidCount} Pelanggan</span>
-                        ${day.uncollectedCount > 0 ? `<br><span class="text-[10px] text-amber-600 font-semibold">(${day.uncollectedCount} Belum Bayar)</span>` : ''}
-                    </td>
-                    <td class="p-4 text-emerald-700 font-bold">RM ${day.totalPaid.toFixed(2)}</td>
-                    <td class="p-4 text-rose-600 font-medium">RM ${day.totalUnpaid.toFixed(2)}</td>
-                    <td class="p-4">
-                        <button onclick="alertCustom('Analisis ringkas bagi ${day.dateStr}: Jualan Berjaya dikutip RM ${day.totalPaid.toFixed(2)} hasil kutipan daripada ${day.paidCount} pelanggan berdaftar.')" class="px-3 py-1 bg-navy text-white text-[10px] font-bold rounded-lg uppercase tracking-wide hover:bg-slate-800">
-                            Butiran
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        }
-
-        // ------------------------------------------------------------
-        // OFFLINE SIMULATOR DATA (FALLBACK SECURITY)
-        // ------------------------------------------------------------
-        function simulateOfflineData() {
-            // Generates local mock orders for offline workspace presentation purposes
-            const todayStrIso = new Date().toISOString();
-            const yesterdayStrIso = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
-
-            globalOrders = [
-                {
-                    receiptId: "WI-7104",
-                    tableNumber: "5",
-                    items: [
-                        { name: "Nasi Lemak Ayam Berempah Ibu", price: 15.90, quantity: 2 },
-                        { name: "Teh Tarik Madu Berbuih", price: 6.50, quantity: 2 }
-                    ],
-                    totalPrice: 44.80,
-                    createdAt: todayStrIso,
-                    paymentStatus: "Unpaid"
-                },
-                {
-                    receiptId: "WI-3921",
-                    tableNumber: "12",
-                    items: [
-                        { name: "Rendang Daging Tok Warisan", price: 18.50, quantity: 1 },
-                        { name: "Cendol Durian D24", price: 12.90, quantity: 1 }
-                    ],
-                    totalPrice: 31.40,
-                    createdAt: todayStrIso,
-                    paymentStatus: "Paid"
-                },
-                {
-                    receiptId: "WI-9021",
-                    tableNumber: "2",
-                    items: [
-                        { name: "Asam Pedas Tetel Melaka", price: 16.90, quantity: 2 },
-                        { name: "Limau Ais Kasturi Pudina", price: 4.50, quantity: 2 }
-                    ],
-                    totalPrice: 42.80,
-                    createdAt: yesterdayStrIso,
-                    paymentStatus: "Paid"
-                }
-            ];
-            renderDashboard();
-        }
-
-        // Custom alert utility (No browser alert)
-        function alertCustom(message) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = "fixed top-5 left-1/2 transform -translate-x-1/2 z-50 max-w-sm w-11/12 bg-red-950/95 border-2 border-[#c5a850]/50 p-4 rounded-2xl text-center text-white shadow-2xl transition-all duration-300";
-            alertDiv.innerHTML = `
-                <div class="text-[#c5a850] text-2xl mb-2"><i class="fa-solid fa-circle-exclamation"></i></div>
-                <p class="text-xs font-semibold leading-relaxed">${message}</p>
-                <button onclick="this.parentElement.remove()" class="mt-3 px-4 py-1.5 bg-[#c5a850] text-navy font-bold rounded-lg text-[10px] uppercase tracking-wide">Faham</button>
-            `;
-            document.body.appendChild(alertDiv);
-            
-            setTimeout(() => {
-                if (alertDiv && alertDiv.parentElement) alertDiv.remove();
-            }, 6000);
-        }
+        window.onload = function() { animate(); };
+        window.addEventListener('scroll', () => { const header = document.querySelector('header'); if (window.scrollY > 20) { header.classList.add('bg-brand-dark/95', 'shadow-lg'); } else { header.classList.remove('bg-brand-dark/95', 'shadow-lg'); } });
     </script>
 </body>
 </html>
